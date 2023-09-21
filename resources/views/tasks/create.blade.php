@@ -4,7 +4,7 @@
     <div class="container">
         <h2>Tambah Tugas Baru</h2>
 
-        <form action="{{ route('todolist.store') }}" method="POST">
+        <form action="{{ route('tasks.store') }}" method="POST">
             @csrf
             <div class="form-group">
                 <label for="title">Judul:</label>

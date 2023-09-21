@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Task;
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class TaskController extends Controller
 {
     public function index()
     {
-        $tasks = Task::all();
-        return view('todolist.index', compact('tasks'));
+        $data['tasks'] = Task::all();
+        return view('tasks.index', $data);
     }
 
     public function create()
     {
-        return view('todolist.create');
+        return view('tasks.create');
     }
 
     public function store(Request $request)
@@ -26,13 +26,17 @@ class TaskController extends Controller
             'description' => 'nullable',
         ]);
 
-        Task::created($request->all());
-        return redirect()->route('todolist.index')->with('success', 'Task created successfully.');
+        Task::create([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+        ]);
+
+        return redirect()->route('tasks.index')->with('success', 'Tugas berhasil ditambahkan.');
     }
 
-    public function edit()
+    public function edit(Task $task)
     {
-        return view('todolist.edit');
+        return view('tasks.edit', compact('task'));
     }
 
     public function update(Request $request, Task $task)
@@ -40,15 +44,21 @@ class TaskController extends Controller
         $request->validate([
             'title' => 'required|max:255',
             'description' => 'nullable',
-            'complete' => 'boolean',
         ]);
 
-        $task->update($request->all());
-        return redirect()->route('todolist.index')->with('success', 'Task updated successfully.');
+        $task->update([
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
+            'completed' => $request->has('completed'),
+        ]);
+
+        return redirect()->route('tasks.index')->with('success', 'Tugas berhasil diperbarui.');
     }
+
     public function destroy(Task $task)
     {
         $task->delete();
-        return redirect()->route('todolist.index')->with('success', 'Task deleted successfully.');
+
+        return redirect()->route('tasks.index')->with('success', 'Tugas berhasil dihapus.');
     }
 }
